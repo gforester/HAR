@@ -1,8 +1,17 @@
-# Human Activity Recognition HAR
-library(dplyr)
-library(stringr)
 
-# ----create UCI directory and set working directory
+# File name: run_analysis.R
+# Getting and Cleaning Data Course Project
+# datasets downloaded from: 
+# https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+# 
+# Summary: Creates a tidy output data frame and output file a combines test and training data sets extracted Human Activity Recognition HAR
+# For more detail read the README.md at
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(knitr)
+
+# ----create HAR directory and set working directory
 if(!file.exists("~/HAR")){
         dir.create("~/HAR")
         setwd("~/HAR")
@@ -11,13 +20,15 @@ if(!file.exists("~/HAR")){
 }
 
 # #-----activity & features data ------------------------------------------
+# Loads activity_labels.txt and features.txt files. Reformats the features
+# variables to be R compatible column names 
+#  
 
-
-# read in 6 activity labels (walking, walking_upstairs...,)
+# Load the 6 activity labels (walking, walking_upstairs...,)
 actlabels <- read.table(file="activity_labels.txt" ,stringsAsFactors= FALSE)
-names(actlabels) <- c("IDAct", "activity" )
+names(actlabels) <- c("IDAct", "activity" ) # update column headers
 # features.txt contains 561 variables names.
-# convert to character vector and reformat for column names for training and
+# convert to character vector and reformatted for column names for training and
 # test files 
 features <- read.table("features.txt", stringsAsFactors = FALSE)
 names(features) <- c("id", "featureVariable")
@@ -27,42 +38,46 @@ featureColnames <- featureV %>%
         gsub(pattern = "[_]{2,3}", replacement = "_") %>%
         gsub(pattern = "_$", replacement = "")
 
-# Test File Loads ---------------------------------------------------------
+
+# Test set File Loads ---------------------------------------------------------
 # Load the Test files: 
 # Load test/X_test.txt: Test set.
 testset <- read.table(file= "./test/X_test.txt", stringsAsFactors= FALSE,
                       col.names = featureColnames)
+
  
-# Include signals with Mean Value and Standard Deviation
+ 
+# Include subset sensor signals variables with mean(): Mean value and 
+# std():Standard Deviation
 testsetMeanStd <- testset %>%
         select(matches("_mean_|_std_|mean$|std$", ignore.case=FALSE))
          
 # Load test/y_test.txt: Test activities file
 testActivities <- read.table(file= "./test/y_test.txt", stringsAsFactors= FALSE,
                              col.names = "IDAct")
-# test/subject_test.txt
+# Load test/subject_test.txt
 testSubject <- read.table(file="./test/subject_test.txt", stringsAsFactors= FALSE,
                           col.names = "IDSub")
-# testSubject <- tbl_df(testSubject)
-
+ 
 # combine activities and subject 
 testSubAct <- dplyr::bind_cols(testSubject,testActivities)
 testSubActLab <- dplyr::full_join(testSubAct,actlabels, by="IDAct")
 # combine testset
 testsetmerge <- dplyr::bind_cols(testSubActLab,testsetMeanStd)
-# expect 54 observations 6 activities x 9 subjects
+# expect 54 observations: 6 activities x 9 subjects
 testsetmerge %>%
         select(IDSub,activity) %>%
         distinct() %>%
-        nrow()
- 
+        nrow() %>%
+        print() 
 
 # TrainingSetLoad ---------------------------------------------------------
-# Load the Training files: 
-# train/X_train.txt: training set.
+# Load train/X_train.txt: training set.
 trainset <- read.table(file= "./train/X_train.txt", stringsAsFactors= FALSE,
                        col.names = featureColnames)
-# Include signals with Mean Value and Standard Deviation
+
+# Include subset sensor signals variables with mean(): Mean value and 
+# std():Standard Deviation
 trainsetMeanStd <- trainset %>%
         select(matches("_mean_|_std_|mean$|std$", ignore.case=FALSE))
 
@@ -83,49 +98,55 @@ trainsetmerge <- dplyr::bind_cols(trainSubActLab,trainsetMeanStd)
 trainsetmerge %>%
         select(IDSub,activity) %>%
         distinct() %>%
-        nrow() 
+        nrow() %>%
+        print()
 
-# join test and training set
+# Merge Data --------------------------------------------------------------
+
+# Merge test and training set.
 test_training_set <- dplyr::union(testsetmerge,trainsetmerge) 
 
 # expect 180 distinct observations (6 activities x 30 subjects)
+# test code used to verify merge worked as expected
 test_training_set %>%
         select(IDSub,activity) %>%
         distinct() %>%
-        nrow() 
+        nrow() == 180
+         
  
-# add subject variable "train_subject_id
+# add subject prefix (subject_10, subject_12...)
+# reorder columns to be more Tidy
 test_training_set <- test_training_set  %>% 
         mutate(subject = paste("subject_", IDSub, sep=""))  %>%  
         select(IDSub,subject,activity,-IDAct,matches("_mean_|_std_|mean$|std$", 
                                       ignore.case=FALSE))
          
  
-         
-#----Calculate mean  
- 
-  
-activitystats <- test_training_set %>%
+# Tidy Mean dataset -------------------------------------------------------
+
+
+#----Calculate mean  ----------------------------------------------------
+
+
+# Create the Tidy Dataset 
+# Calculate the average for each variable group by subject and activity 
+# Prefix feature variable names with "mean_" so its clear the values in the
+# dataset are average values
+activityMeans <- test_training_set %>%
         group_by(IDSub,subject,activity) %>%
-        dplyr::summarise_each(funs(mean))
-library(tidyr)
-library(ggplot2)
-zz <- test_training_set %>%
-        gather("signals", "value",4:69) %>%
-        group_by(IDSub,subject,activity,signals) %>%
-        dplyr::summarise_each(funs(mean))
+        dplyr::summarise_each(funs(mean)) %>%
+        gather("signal","mean", 4:69) %>%
+        mutate(signal=paste("mean_",signal, sep="")) %>%
+        spread(signal,mean) 
 
-plot(value ~ signal)
-
-
-        
-         
-  
+write.table(x= activityMeans, file="TidyHAR.txt", row.name= FALSE)
         
 # helper scripts
 library(knitr)
 # compares original features variable names to R column formatted names
-featurescompare <- cbind(featureV, featureColnames)
+featureMS <- featureV[grepl(featureV, pattern= "mean\\()|std\\()")]
+FeatureVariablesFormat <- names(trainsetMeanStd)
+featurescompare <- cbind(featureMS, FeatureVariablesFormat)
 write.table(x= featurescompare, file= "featuresTransform.txt", row.name=FALSE)
 
 sink("FeaturesFormat.txt")
