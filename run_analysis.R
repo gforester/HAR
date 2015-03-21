@@ -11,6 +11,7 @@ library(tidyr)
 library(stringr)
 library(knitr)
 
+
 # ----create HAR directory and set working directory
 if(!file.exists("~/HAR")){
         dir.create("~/HAR")
@@ -18,6 +19,7 @@ if(!file.exists("~/HAR")){
 }else {
         setwd("~/HAR")
 }
+
 
 # #-----activity & features data ------------------------------------------
 # Loads activity_labels.txt and features.txt files. Reformats the features

@@ -7,28 +7,51 @@ date: "March 21, 2015"
 
 # How execute the run_analysis.R script
 
-Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory. The methodology is included below and details of the variables, the data, and clean up is described in the [CodeBook.md]
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory. The methodology is included below and details of the variables, the data, and clean up is described in the 
+[CodeBook.md](https://github.com/gforester/HAR/blob/master/CodeBook.md)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+**Environment:**
+* RStudio - Version 0.98.1103
+* R version 3.1.2 (2014-10-31)
+* MacBook Pro - x86_64-apple-darwin10.8.0 
 
+**Setup & requirements to run run_analysis script**
 
-```r
-summary(cars)
+* Ensure these library are install in your R environment
+        + library(dplyr)
+        + library(tidyr)
+        + library(knitr)
+* Script requires you create a HAR folder in your home directory.
 ```
-
+if(!file.exists("~/HAR")){
+        dir.create("~/HAR")
+        setwd("~/HAR")
+}else {
+        setwd("~/HAR")
+}
 ```
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
+* Ensure your unzip UCI HAR Dataset folder is in this path ~/HAR/UCI HAR Dataset
+* down run_analysis.R from GITHUB
+
+``` # Script to download run_analysis.R
+fileurl <- "https://github.com/gforester/HAR/blob/master/run_analysis.R"
+download.file(fileurl,destfile="~/HAR/run_analysis.R",method="curl")
 ```
-
-You can also embed plots, for example:
-
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+        
+**Steps to run run_analysis script**
+* open RStudio application
+* open run_analysis.R -- to view the code
+* click the source code icon or click on Code > Source. Code should execute, and will run around 30 secs. While running the following will be displayed:
+        
+```
+[1] "features.txt loaded"
+[1] "completed loading merge test subject/activities/test \n        set: 2947 observations"
+[1] "completed loading merge Training subject/activities/test \n        set: 7352 observations"
+[1] "Training & Test data merged: 10299 observations"
+[1] "TidyHAR.txt written to working directory\n        180 observations and 69 variables"
+```
+        
+ 
+ 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
