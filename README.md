@@ -7,7 +7,7 @@ date: "March 21, 2015"
 
 # How execute the run_analysis.R script
 
-Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory. The methodology is included below and details of the variables, the data, and clean up is described in the 
+Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory. The steps to execute run_analysis.R and methodology is included below and details of the variables, the data, and clean up is described in the 
 [CodeBook.md](https://github.com/gforester/HAR/blob/master/CodeBook.md)
 
 **Environment:**
@@ -18,10 +18,11 @@ Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory.
 **Setup & requirements to run run_analysis script**
 
 * Ensure these library are install in your R environment
-        + library(dplyr)
-        + library(tidyr)
-        + library(knitr)
-* Script requires you create a HAR folder in your home directory.
++ library(dplyr)
++ library(tidyr)
++ library(knitr)
+
+* R script requires a folder name __HAR__ folder in your home directory.
 ```
 if(!file.exists("~/HAR")){
         dir.create("~/HAR")
@@ -50,7 +51,11 @@ download.file(fileurl,destfile="~/HAR/run_analysis.R",method="curl")
 [1] "Training & Test data merged: 10299 observations"
 [1] "TidyHAR.txt written to working directory\n        180 observations and 69 variables"
 ```
-        
+** Output files generated **
+* TidyHAR.txt - (write.table(x= activityMeans, file="TidyHAR.txt", row.name= FALSE))
+* featuresVariables.txt - markdown formatted table 
+** Code Details **
+
  
  
 

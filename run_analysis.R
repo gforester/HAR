@@ -140,14 +140,16 @@ library(knitr)
 featureMS <- featureV[grepl(featureV, pattern= "mean\\()|std\\()")]
 FeatureVariablesFormat <- names(trainsetMeanStd)
 featurescompare <- cbind(featureMS, FeatureVariablesFormat)
-write.table(x= featurescompare, file= "featuresTransform.txt", row.name=FALSE)
+colnames(featurescompare) <- c("OriginalFeatureVariables","TransformFeatureVariables")
+# write.table(x= featurescompare, file= "featuresVariables.txt", row.name=FALSE)
 
-sink("FeaturesFormat.txt")
-kable(featurescompare, format = "markdown", col.names = c("Original Feature Name", 
-                                                          "R reformatted Name"))
+sink("featuresVariables.txt") # R command to write console output to a file
+kable(featurescompare, format = "markdown")
 sink()
 
 # Final list of filter variables
-FeaturesFinal <- as.data.frame(names(activityMeans))
-kable(FeaturesFinal, format = "markdown")
+sink("TidyVariables.txt") # R command to write console output to a file
+TidyVariables <- as.data.frame(names(activityMeans))
+kable(TidyVariables, format = "markdown")
+sink() # close output file
 
