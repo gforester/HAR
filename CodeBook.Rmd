@@ -43,10 +43,6 @@ Notes:
 - Features are normalized and bounded within [-1,1].
 - Each feature vector is a row on the text file.
 
- 
-
-
-
 # Data Transformation and data clean up for each file
 
 **activity_labels.txt**
@@ -74,6 +70,7 @@ featureColnames <- featureV %>%
         gsub(pattern = "Mag", replacement ="Magnitude")
 ```
 Reduced the variables (columns) from test/X_txt.txt and train/X_train.txt from 561 to 66 variables with the following code:
+
 ```
 trainsetMeanStd <- trainset %>%
         dplyr::select(matches("_mean_|_std_|mean$|std$", ignore.case=FALSE))
@@ -114,6 +111,11 @@ trainset <- read.table(file= "./test/X_test.txt", stringsAsFactors= FALSE,
 **train/y_train.txt': Training labels and test/y_test.txt': Training labels**
 Created column variable IDAct. Join test and train labels id tables with the activity label table.
 
+**Merge datasets**
+
+Merged the Test and training set data and order the columns. See Tidy table below. Also added a new variable subject: subject_IDSub (subject_1,...subject_30). 
+
+
 **Final Tidy Dataset**
 
 The final clean up involved adding the prefix mean_ to the measured variables, since the mean was taken for each subject, activity and measurement.  
@@ -127,6 +129,8 @@ activityMeans <- test_training_set %>%
         tidyr::spread(signal,mean) 
 ```
 All measured variables are type=double with no units (data received from UCI HAR Dataset was normalized.)
+
+**Tidy Table Variable list:**
 
 ```{r,echo=FALSE}
 kable(TidyVariables, format = "markdown")
