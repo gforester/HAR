@@ -33,7 +33,11 @@ featureV <- features[["featureVariable"]]
 featureColnames <- featureV %>%
         gsub(pattern = "[\\-\\,\\()\\()-]", replacement = "_") %>%
         gsub(pattern = "[_]{2,3}", replacement = "_") %>%
-        gsub(pattern = "_$", replacement = "")
+        gsub(pattern = "_$", replacement = "") %>%
+        gsub(pattern = "Acc", replacement = "Acceleration") %>%
+        gsub(pattern = "^f", replacement = "freq") %>%
+        gsub(pattern = "^t", replacement = "time") %>%
+        gsub(pattern = "Mag", replacement ="Magnitude")
 
 
 # ---Load Test Files  ---------------------------------------------------------

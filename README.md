@@ -63,8 +63,7 @@ Loads the required libraries, and set the working directory
 
 ** Load Activity labels and Features text files: **
 This section of the code loads the activity labels and features text files. 
-The default activity labels columns are renamed to "IDAct", "activity". The default features column names are renamed to "id", "featureVariable". Regular expression is used to replace the characters ()-. I found that these characters are not valid in column names. In initial debugging they were replaced with "." A character vector, __featureColnames__ is generated and used in the read.file 
-col.names parameter. This eliminated the requirement to rename the default V1 to V561 column names.
+The default activity labels columns are renamed to "IDAct", "activity". The default features column names are renamed to "id", "featureVariable". Updated the feature names to be more human readable and replace the characters ()-.  I found that these characters are not valid in column names. In initial debugging they were replaced with "." A character vector, __featureColnames__ is generated and used in the read.file col.names parameter. This eliminated the requirement to rename the default V1 to V561 column names.
 
 ** Load Test Files **
 This section merges the activity labels with test activities, subject, and features measurement data. In addition the code extracts a subset of the signal measurement data __mean(): Mean value__  and __std(): Standard deviation__  
@@ -77,7 +76,7 @@ The same logic is used to merge the training data as outlined in the Load Test F
 In this section the test and training set data are joined, and prefix subject is added to the subject Id field. I also tidy up the organization of the column names.
 
 ** Create the Independent Tidy dataset **
-Mean statistic is calculated for each IDSub,subject, activiy and measurement group. I added mean_ prefix to each of the measurement variables to make the variables more tidy. The tidy data is presented in long format (180 rows by 69 variables ). and TidyHAR.txt file is written to the working directory. The following R-code can be used to view the text data.
+Mean statistic is calculated for each IDSub,subject, activiy and measurement group. I added mean_ prefix to each of the measurement variables. The tidy data is presented in long format (180 rows by 69 variables ). and TidyHAR.txt file is written to the working directory. The following R-code can be used to view the text data.
 
 ```
 tidyData <- read.table(file="TidyHAR.txt" ,stringsAsFactors= FALSE, header=TRUE)
