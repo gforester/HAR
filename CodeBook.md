@@ -19,8 +19,6 @@ Some other important tips
 * Make variable names human readable AgeAtDiagnosis instead of AgeDx
 * In general data should be saved in one file per table.
 
-reference: [datasharing](https://github.com/jtleek/datasharing)
-
 #Initial data files came from UCI HAR Dataset folder
 
 The folder includes the following files:
@@ -277,5 +275,8 @@ All measured variables are type=double with no units (data received from UCI HAR
 |mean_timeGravityAccelerationMagnitude_mean      |
 |mean_timeGravityAccelerationMagnitude_std       |
 
+Reference: 
+[datasharing](https://github.com/jtleek/datasharing)
+[Tidy Data](http://vita.had.co.nz/papers/tidy-data.pdf)
 
  

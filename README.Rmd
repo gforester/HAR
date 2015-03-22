@@ -19,12 +19,11 @@ Summary: run_analysis writes a tidy file, TidyHAR.txt to your working directory.
 **Setup & requirements to run run_analysis script**
 
 * Ensure these library are install in your R environment
-
         + library(dplyr)
 	+ library(tidyr)
 	+ library(knitr)
-* Set the working directory to setwd("~/UCI HAR Dataset").  Assumes folder UCI HAR Dataset is locatd in the home directory.
-* down run_analysis.R from GITHUB
+* Set the working directory to setwd("~/UCI HAR Dataset").  The folder UCI HAR Dataset must be located in the home directory.
+* download the run_analysis.R from GITHUB
 ``` 
 Script to download run_analysis.R
 fileurl <- "https://github.com/gforester/HAR/blob/master/run_analysis.R"
