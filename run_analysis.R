@@ -119,8 +119,6 @@ activityMeans <- test_training_set %>%
 
 write.table(x= activityMeans, file="TidyHAR.txt", row.name= FALSE)
 
-
-
 print(sprintf("TidyHAR.txt written to working directory
         %d observations and %d variables", nrow(activityMeans)
         , length(activityMeans)))
@@ -133,11 +131,11 @@ print(sprintf("TidyHAR.txt written to working directory
 featureMS <- featureV[grepl(featureV, pattern= "mean\\()|std\\()")]
 FeatureVariablesFormat <- names(trainsetMeanStd)
 featurescompare <- cbind(featureMS, FeatureVariablesFormat)
+
 colnames(featurescompare) <- c("OriginalFeatureVariables","TransformFeatureVariables")
  
 sink("featuresVariables.txt") # R command to write console output to a file
 kable(featurescompare, format = "markdown")
-write.table
 sink()
 
 # Final list of filter variables
