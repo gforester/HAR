@@ -145,6 +145,7 @@ sink()
 # Final list of filter variables
 sink("TidyVariables.txt") # R command to write console output to a file
 TidyVariables <- as.data.frame(names(activityMeans))
+colnames(TidyVariables) <- c("VariableNames")
 knitr::kable(TidyVariables, format = "markdown")
 sink() # close output file
 

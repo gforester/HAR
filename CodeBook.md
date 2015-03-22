@@ -21,9 +21,9 @@ Some other important tips
 
 reference: [datasharing](https://github.com/jtleek/datasharing)
 
-Initial data files came from UCI HAR Dataset folder
+#Initial data files came from UCI HAR Dataset folder
 
-**The folder includes the following files:**
+The folder includes the following files:
 
 * 'README.txt'
 *  'features_info.txt': Shows information about the variables used on the feature vector.
@@ -43,18 +43,17 @@ Notes:
 - Features are normalized and bounded within [-1,1].
 - Each feature vector is a row on the text file.
 
-For more information about this dataset contact: activityrecognition@smartlab.ws
-
-Each training file below has 7352 observations and each test file has 2947 observations. The training subject file has 21 subjects and the test subject file has 9 subjects.
-
--  train/X_train.txt': Training set.
--  train/y_train.txt': Training labels.
--  train/subject_train.txt
--  test/X_test.txt': Test set.
--  test/y_test.txt': Test labels.
--  test/subject_train.txt
  
-Activites:
+
+
+
+# Data Transformation and data clean up for each file
+
+**activity_labels.txt**
+Created two column variables
+
+* IDAct - identifier field. Type: Integer
+* activities - activities variable is included in the final dataset. Type: chr
 
 
 | IDAct|activity           |
@@ -66,17 +65,21 @@ Activites:
 |     5|STANDING           |
 |     6|LAYING             |
 
-** Variable transformation of features.txt file. **
-The following script code removed -() and replaced with _   
-These characters were replaced, because these invalid column name characters, and R replaces these characters with . (period). I decided on the _ (underscore). I also removed any underscore at the end of the variable name. See table 1.
+** features.txt file. **
+Created two column variable: "id", "featureVariable"
+Updated the feature names to be more human readable and replace the characters ()-.  I found that these characters are not valid in column names. In initial debugging they were replaced with "." A character vector, __featureColnames__ is generated and used in the read.file col.names parameter. This eliminated the requirement to rename the default V1 to V561 column names. The following code updated feature names. 
 
 ```
 featureColnames <- featureV %>%
         gsub(pattern = "[\\-\\,\\()\\()-]", replacement = "_") %>%
         gsub(pattern = "[_]{2,3}", replacement = "_") %>%
-        gsub(pattern = "_$", replacement = "")
+        gsub(pattern = "_$", replacement = "") %>%
+        gsub(pattern = "Acc", replacement = "Acceleration") %>%
+        gsub(pattern = "^f", replacement = "freq") %>%
+        gsub(pattern = "^t", replacement = "time") %>%
+        gsub(pattern = "Mag", replacement ="Magnitude")
 ```
-Reduced the variables (columns) from test/X_txt.txt and train/X_train.txt from 561 to 66 variables. 
+Reduced the variables (columns) from test/X_txt.txt and train/X_train.txt from 561 to 66 variables with the following code:
 ```
 trainsetMeanStd <- trainset %>%
         dplyr::select(matches("_mean_|_std_|mean$|std$", ignore.case=FALSE))
@@ -84,8 +87,8 @@ trainsetMeanStd <- trainset %>%
 testsetMeanStd <- testset %>%
         dplyr::select(matches("_mean_|_std_|mean$|std$", ignore.case=FALSE))
 ```
-
-** Table 1: Initial Feature.txt variable transformation.
+Table one displays the original feature names and the updated feature names
+ 
 
 
 |OriginalFeatureVariables    |TransformFeatureVariables                  |
@@ -157,18 +160,32 @@ testsetMeanStd <- testset %>%
 |fBodyBodyGyroJerkMag-mean() |freqBodyBodyGyroJerkMagnitude_mean         |
 |fBodyBodyGyroJerkMag-std()  |freqBodyBodyGyroJerkMagnitude_std          |
 
-**activity_labels.txt**
-Created to column variables
+Each training file below has 7352 observations and each test file has 2947 observations. The training subject file has 21 subjects and the test subject file has 9 subjects.
 
-* IDAct - identifier field.  
-* activities - activities variable is included in the final dataset.
+-  train/X_train.txt': Training set.
+-  train/y_train.txt': Training labels.
+-  train/subject_train.txt
+-  test/X_test.txt': Test set.
+-  test/y_test.txt': Test labels.
+-  test/subject_train.txt
 
- 
 **Subject files**
  
+train/subject_train.txt - single column table. Created column variable IDSub
 
-train/subject_train.txt - single column table with number observations equal to train/
-* test/subject_test.txt
+**train/X_train.txt': Training set, and test/X_test.txt': Test set.**
+The column names for these files are generated when the data is read using the 
+col.name parameter. 
+```
+testset <- read.table(file= "./test/X_test.txt", stringsAsFactors= FALSE,
+                      col.names = featureColnames)
+
+trainset <- read.table(file= "./test/X_test.txt", stringsAsFactors= FALSE,
+                      col.names = featureColnames)
+```
+**train/y_train.txt': Training labels and test/y_test.txt': Training labels**
+Created column variable IDAct. Join test and train labels id tables with the activity label table.
+
 **Final Tidy Dataset**
 
 The final clean up involved adding the prefix mean_ to the measured variables, since the mean was taken for each subject, activity and measurement.  
@@ -181,8 +198,10 @@ activityMeans <- test_training_set %>%
         dplyr::mutate(signal=paste("mean_",signal, sep="")) %>%
         tidyr::spread(signal,mean) 
 ```
+All measured variables are type=double with no units (data received from UCI HAR Dataset was normalized.)
 
-|names(activityMeans)                            |
+
+|VariableNames                                   |
 |:-----------------------------------------------|
 |IDSub                                           |
 |subject                                         |
@@ -254,77 +273,5 @@ activityMeans <- test_training_set %>%
 |mean_timeGravityAccelerationMagnitude_mean      |
 |mean_timeGravityAccelerationMagnitude_std       |
 
-
-|Variable Names                 |
-|:------------------------------|
-|IDSub                          |
-|subject                        |
-|activity                       |
-|mean_fBodyAcc_mean_X           |
-|mean_fBodyAcc_mean_Y           |
-|mean_fBodyAcc_mean_Z           |
-|mean_fBodyAcc_std_X            |
-|mean_fBodyAcc_std_Y            |
-|mean_fBodyAcc_std_Z            |
-|mean_fBodyAccJerk_mean_X       |
-|mean_fBodyAccJerk_mean_Y       |
-|mean_fBodyAccJerk_mean_Z       |
-|mean_fBodyAccJerk_std_X        |
-|mean_fBodyAccJerk_std_Y        |
-|mean_fBodyAccJerk_std_Z        |
-|mean_fBodyAccMag_mean          |
-|mean_fBodyAccMag_std           |
-|mean_fBodyBodyAccJerkMag_mean  |
-|mean_fBodyBodyAccJerkMag_std   |
-|mean_fBodyBodyGyroJerkMag_mean |
-|mean_fBodyBodyGyroJerkMag_std  |
-|mean_fBodyBodyGyroMag_mean     |
-|mean_fBodyBodyGyroMag_std      |
-|mean_fBodyGyro_mean_X          |
-|mean_fBodyGyro_mean_Y          |
-|mean_fBodyGyro_mean_Z          |
-|mean_fBodyGyro_std_X           |
-|mean_fBodyGyro_std_Y           |
-|mean_fBodyGyro_std_Z           |
-|mean_tBodyAcc_mean_X           |
-|mean_tBodyAcc_mean_Y           |
-|mean_tBodyAcc_mean_Z           |
-|mean_tBodyAcc_std_X            |
-|mean_tBodyAcc_std_Y            |
-|mean_tBodyAcc_std_Z            |
-|mean_tBodyAccJerk_mean_X       |
-|mean_tBodyAccJerk_mean_Y       |
-|mean_tBodyAccJerk_mean_Z       |
-|mean_tBodyAccJerk_std_X        |
-|mean_tBodyAccJerk_std_Y        |
-|mean_tBodyAccJerk_std_Z        |
-|mean_tBodyAccJerkMag_mean      |
-|mean_tBodyAccJerkMag_std       |
-|mean_tBodyAccMag_mean          |
-|mean_tBodyAccMag_std           |
-|mean_tBodyGyro_mean_X          |
-|mean_tBodyGyro_mean_Y          |
-|mean_tBodyGyro_mean_Z          |
-|mean_tBodyGyro_std_X           |
-|mean_tBodyGyro_std_Y           |
-|mean_tBodyGyro_std_Z           |
-|mean_tBodyGyroJerk_mean_X      |
-|mean_tBodyGyroJerk_mean_Y      |
-|mean_tBodyGyroJerk_mean_Z      |
-|mean_tBodyGyroJerk_std_X       |
-|mean_tBodyGyroJerk_std_Y       |
-|mean_tBodyGyroJerk_std_Z       |
-|mean_tBodyGyroJerkMag_mean     |
-|mean_tBodyGyroJerkMag_std      |
-|mean_tBodyGyroMag_mean         |
-|mean_tBodyGyroMag_std          |
-|mean_tGravityAcc_mean_X        |
-|mean_tGravityAcc_mean_Y        |
-|mean_tGravityAcc_mean_Z        |
-|mean_tGravityAcc_std_X         |
-|mean_tGravityAcc_std_Y         |
-|mean_tGravityAcc_std_Z         |
-|mean_tGravityAccMag_mean       |
-|mean_tGravityAccMag_std        |
 
  
